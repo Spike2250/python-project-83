@@ -8,10 +8,13 @@ from flask import (
     url_for,
 )
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
+SECRET = os.getenv('SECRET_KEY')
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SECRET_KEY'] = SECRET
 
 
 @app.route('/')
