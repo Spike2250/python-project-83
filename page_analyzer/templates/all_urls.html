@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="container-lg mt-3">
+    <h1>Сайты</h1>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover text-nowrap" data-test="urls">
+        <thead>
+          <tr class="table-secondary">
+            <th>ID</th>
+            <th>Имя</th>
+            <th>Последняя проверка</th>
+            <th>Код ответа</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for url in urls %}
+          <tr>
+            <td>{{ url.id }}</td>
+            <td><a href="{{ url_for('one_url', id=url.id) }}">{{ url.name }}</a></td>
+              {% if url.check_time %}
+                <td>{{ url.check_time }}</td>
+                <td>{{ url.status_code }}</td>
+              {% else %}
+                <td></td>
+                <td></td>
+              {% endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
