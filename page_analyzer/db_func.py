@@ -62,7 +62,7 @@ def find_checks(url_id):
 def find_all_urls():
     with connect_to_db() as conn:
         with get_cursor(conn) as cursor:
-            query = '''
+            query = """
                 SELECT DISTINCT ON (urls.id)
                     urls.id AS id,
                     urls.name AS name,
@@ -73,6 +73,27 @@ def find_all_urls():
                 AND url_checks.id = (SELECT MAX(id)
                     FROM url_checks
                     WHERE url_id = urls.id)
-                ORDER BY urls.id DESC;'''
+                ORDER BY urls.id DESC;"""
             cursor.execute(query)
             return cursor.fetchall()
+
+
+def insert_new_url(data):
+    with connect_to_db() as conn:
+        with get_cursor(conn) as cursor:
+            query = """
+                INSERT INTO urls (name, created_at)
+                VALUES (%s, %s) RETURNING id;"""
+            cursor.execute(query=query, vars=data)
+            return cursor.fetchone()
+
+
+def insert_url_check(data):
+    with connect_to_db() as conn:
+        with get_cursor(conn) as cursor:
+            query = """
+                INSERT INTO url_checks (
+                    url_id, status_code, h1,
+                    title, description, created_at)\
+                VALUES (%s, %s, %s, %s, %s, %s);"""
+            cursor.execute(query=query, vars=data)
