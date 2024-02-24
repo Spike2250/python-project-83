@@ -104,7 +104,7 @@ def check_url(id_):
                     url_id, status_code, h1,
                     title, description, created_at)\
                 VALUES (%s, %s, %s, %s, %s, %s);"""
-            data = (id, status_code, h1, title, description,
+            data = (id_, status_code, h1, title, description,
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             cursor.execute(query=query, vars=data)
             flash('Страница успешно проверена', 'alert-success')
