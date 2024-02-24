@@ -9,10 +9,10 @@ import requests
 import psycopg2
 from bs4 import BeautifulSoup
 
-from .db_func import (connect_to_db, get_cursor,
-                      insert_new_url, insert_url_check,
-                      find_url_by_id, find_url_by_name,
-                      find_all_urls, find_checks)
+from .db_func import (
+    insert_new_url, insert_url_check,
+    find_url_by_id, find_url_by_name,
+    find_all_urls, find_checks)
 from .url_func import normalize_url, validate_url
 from .parsing import get_seo_data
 
@@ -51,23 +51,6 @@ def urls_post():
     except psycopg2.errors.UniqueViolation:
         url_id = find_url_by_name(new_url).id
         flash('Страница уже существует', 'alert-warning')
-
-    # with connect_to_db() as conn:
-    #     with get_cursor(conn) as cursor:
-    #         try:
-    #             query = """
-    #                 INSERT INTO urls (name, created_at)
-    #                 VALUES (%s, %s) RETURNING id;
-    #             """
-    #             data = (new_url, datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    #             cursor.execute(query=query, vars=data)
-    #             url_info = cursor.fetchone()
-    #             url_id = url_info.id
-    #             flash('Страница успешно добавлена', 'alert-success')
-    #         except psycopg2.errors.UniqueViolation:
-    #             url = find_url_by_name(new_url)
-    #             url_id = url.id
-    #             flash('Страница уже существует', 'alert-warning')
 
     return redirect(url_for('one_url', id_=url_id))
 
@@ -112,18 +95,6 @@ def check_url(id_):
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     insert_url_check(data)
     flash('Страница успешно проверена', 'alert-success')
-
-    # with connect_to_db() as conn:
-    #     with get_cursor(conn) as cursor:
-    #         query = """
-    #             INSERT INTO url_checks (
-    #                 url_id, status_code, h1,
-    #                 title, description, created_at)\
-    #             VALUES (%s, %s, %s, %s, %s, %s);"""
-    #         data = (id_, status_code, h1, title, description,
-    #                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    #         cursor.execute(query=query, vars=data)
-    #         flash('Страница успешно проверена', 'alert-success')
 
     return redirect(url_for('one_url', id_=id_))
 

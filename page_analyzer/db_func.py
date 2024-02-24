@@ -15,16 +15,6 @@ def get_cursor(connection):
     return connection.cursor(cursor_factory=NamedTupleCursor)
 
 
-# def select_from_db(select_query, many_values=False):
-#     with connect_to_db() as conn:
-#         with get_cursor(conn) as cursor:
-#             cursor.execute(select_query)
-#             if many_values:
-#                 return cursor.fetchall()
-#             else:
-#                 return cursor.fetchone()
-
-
 def find_url_by_id(id_):
     with connect_to_db() as conn:
         with get_cursor(conn) as cursor:
