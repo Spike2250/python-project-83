@@ -10,8 +10,8 @@ import psycopg2
 from bs4 import BeautifulSoup
 
 from .db_func import (connect_to_db, get_cursor,
-                      find_url, find_all_urls,
-                      find_checks)
+                      find_url_by_id, find_url_by_name,
+                      find_all_urls, find_checks)
 from .url_func import normalize_url, validate_url
 from .parsing import get_seo_data
 
@@ -55,8 +55,7 @@ def urls_post():
                 url_id = url_info.id
                 flash('Страница успешно добавлена', 'alert-success')
             except psycopg2.errors.UniqueViolation:
-                url = find_url(field='name',
-                               value=new_url)
+                url = find_url_by_name(new_url)
                 url_id = url.id
                 flash('Страница уже существует', 'alert-warning')
     return redirect(url_for('one_url', id=url_id))
@@ -68,23 +67,21 @@ def urls():
     return render_template('all_urls.html', urls=urls)
 
 
-@app.route('/urls/<int:id>', methods=['GET'])
-def one_url(id):
-    url = find_url(field='id',
-                   value=id)
+@app.route('/urls/<int:id_>', methods=['GET'])
+def one_url(id_):
+    url = find_url_by_id(id_)
     if url is None:
         flash('Такой страницы не существует', 'alert-warning')
         return redirect(url_for('index'))
 
-    return render_template('show.html', ID=id, name=url.name,
+    return render_template('show.html', ID=id_, name=url.name,
                            created_at=url.created_at,
                            checks=find_checks(id))
 
 
-@app.route('/urls/<int:id>/checks', methods=['POST'])
-def check_url(id):
-    url = find_url(field='id',
-                   value=id)
+@app.route('/urls/<int:id_>/checks', methods=['POST'])
+def check_url(id_):
+    url = find_url_by_id(id_)
     try:
         with requests.get(url.name) as response:
             status_code = response.status_code
@@ -92,7 +89,7 @@ def check_url(id):
 
     except requests.exceptions.RequestException:
         flash('Произошла ошибка при проверке', 'alert-danger')
-        return render_template('show.html', ID=id, name=url.name,
+        return render_template('show.html', ID=id_, name=url.name,
                                created_at=url.created_at,
                                checks=find_checks(id)), 422
 
@@ -112,7 +109,7 @@ def check_url(id):
             cursor.execute(query)
             flash('Страница успешно проверена', 'alert-success')
 
-    return redirect(url_for('one_url', id=id))
+    return redirect(url_for('one_url', id=id_))
 
 
 @app.errorhandler(psycopg2.OperationalError)
