@@ -58,7 +58,7 @@ def urls_post():
                 url = find_url_by_name(new_url)
                 url_id = url.id
                 flash('Страница уже существует', 'alert-warning')
-    return redirect(url_for('one_url', id=url_id))
+    return redirect(url_for('one_url', id_=url_id))
 
 
 @app.route('/urls', methods=['GET'])
@@ -109,7 +109,7 @@ def check_url(id_):
             cursor.execute(query=query, vars=data)
             flash('Страница успешно проверена', 'alert-success')
 
-    return redirect(url_for('one_url', id=id_))
+    return redirect(url_for('one_url', id_=id_))
 
 
 @app.errorhandler(psycopg2.OperationalError)
