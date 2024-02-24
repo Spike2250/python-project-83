@@ -76,7 +76,7 @@ def one_url(id_):
 
     return render_template('show.html', ID=id_, name=url.name,
                            created_at=url.created_at,
-                           checks=find_checks(id))
+                           checks=find_checks(id_))
 
 
 @app.route('/urls/<int:id_>/checks', methods=['POST'])
@@ -91,7 +91,7 @@ def check_url(id_):
         flash('Произошла ошибка при проверке', 'alert-danger')
         return render_template('show.html', ID=id_, name=url.name,
                                created_at=url.created_at,
-                               checks=find_checks(id)), 422
+                               checks=find_checks(id_)), 422
 
     h1, title, description = get_seo_data(
         BeautifulSoup(response.text, 'html.parser')
