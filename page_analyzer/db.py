@@ -1,5 +1,5 @@
 import os
-# from contextlib import contextmanager
+from contextlib import contextmanager
 from dotenv import load_dotenv
 import psycopg2
 from psycopg2.extras import NamedTupleCursor
@@ -8,17 +8,17 @@ load_dotenv()
 DATABASE_URL = os.getenv('DATABASE_URL')
 
 
-# @contextmanager
-# def connection():
-#     conn = psycopg2.connect(DATABASE_URL)
-#     try:
-#         yield conn
-#     finally:
-#         conn.close()
+@contextmanager
+def connection():
+    conn = psycopg2.connect(DATABASE_URL)
+    try:
+        yield conn
+    finally:
+        conn.close()
 
 
-def get_connect():
-    return psycopg2.connect(DATABASE_URL)
+# def get_connect():
+#     return psycopg2.connect(DATABASE_URL)
 
 
 def get_cursor(connection):
@@ -26,8 +26,7 @@ def get_cursor(connection):
 
 
 def find_url_by_id(id_):
-    conn = get_connect()
-    with conn:
+    with connection() as conn:
         with get_cursor(conn) as cursor:
             query = """
                 SELECT *
@@ -35,13 +34,11 @@ def find_url_by_id(id_):
                 WHERE id = %s;"""
             cursor.execute(query, (id_, ))
             url = cursor.fetchone()
-    conn.close()
     return url
 
 
 def find_url_by_name(name):
-    conn = get_connect()
-    with conn:
+    with connection() as conn:
         with get_cursor(conn) as cursor:
             query = """
                 SELECT *
@@ -49,13 +46,11 @@ def find_url_by_name(name):
                 WHERE name = %s;"""
             cursor.execute(query, (name, ))
             url = cursor.fetchone()
-    conn.close()
     return url
 
 
 def find_checks(url_id):
-    conn = get_connect()
-    with conn:
+    with connection() as conn:
         with get_cursor(conn) as cursor:
             query = """
                 SELECT *
@@ -64,13 +59,11 @@ def find_checks(url_id):
                 ORDER BY id DESC;"""
             cursor.execute(query, (url_id, ))
             check = cursor.fetchall()
-    conn.close()
     return check
 
 
 def find_all_urls():
-    conn = get_connect()
-    with conn:
+    with connection() as conn:
         with get_cursor(conn) as cursor:
             query = """
                 SELECT DISTINCT ON (urls.id)
@@ -86,26 +79,22 @@ def find_all_urls():
                 ORDER BY urls.id DESC;"""
             cursor.execute(query)
             urls = cursor.fetchall()
-    conn.close()
     return urls
 
 
 def insert_new_url(data):
-    conn = get_connect()
-    with conn:
+    with connection() as conn:
         with get_cursor(conn) as cursor:
             query = """
                 INSERT INTO urls (name, created_at)
                 VALUES (%s, %s) RETURNING id;"""
             cursor.execute(query=query, vars=data)
             url = cursor.fetchone()
-    conn.close()
     return url
 
 
 def insert_url_check(data):
-    conn = get_connect()
-    with conn:
+    with connection() as conn:
         with get_cursor(conn) as cursor:
             query = """
                 INSERT INTO url_checks (
@@ -113,4 +102,3 @@ def insert_url_check(data):
                     title, description, created_at)\
                 VALUES (%s, %s, %s, %s, %s, %s);"""
             cursor.execute(query=query, vars=data)
-    conn.close()
