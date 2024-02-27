@@ -34,7 +34,6 @@ def find_url_by_id(id_):
                 WHERE id = %s;"""
             cursor.execute(query, (id_, ))
             url = cursor.fetchone()
-        conn.close()
     return url
 
 
@@ -47,7 +46,6 @@ def find_url_by_name(name):
                 WHERE name = %s;"""
             cursor.execute(query, (name, ))
             url = cursor.fetchone()
-        conn.close()
     return url
 
 
@@ -61,7 +59,6 @@ def find_checks(url_id):
                 ORDER BY id DESC;"""
             cursor.execute(query, (url_id, ))
             check = cursor.fetchall()
-        conn.close()
     return check
 
 
@@ -82,7 +79,6 @@ def find_all_urls():
                 ORDER BY urls.id DESC;"""
             cursor.execute(query)
             urls = cursor.fetchall()
-        conn.close()
     return urls
 
 
@@ -94,7 +90,6 @@ def insert_new_url(data):
                 VALUES (%s, %s) RETURNING id;"""
             cursor.execute(query=query, vars=data)
             url = cursor.fetchone()
-        conn.close()
     return url
 
 
@@ -107,4 +102,3 @@ def insert_url_check(data):
                     title, description, created_at)\
                 VALUES (%s, %s, %s, %s, %s, %s);"""
             cursor.execute(query=query, vars=data)
-        conn.close()
