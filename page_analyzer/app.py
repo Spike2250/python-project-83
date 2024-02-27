@@ -9,12 +9,12 @@ import requests
 import psycopg2
 from bs4 import BeautifulSoup
 
-from .db_func import (
+from .db import (
     insert_new_url, insert_url_check,
     find_url_by_id, find_url_by_name,
     find_all_urls, find_checks)
-from .url_func import normalize_url, validate_url
 from .parsing import get_seo_data
+import page_analyzer.url
 
 
 load_dotenv()
@@ -33,7 +33,7 @@ def index():
 @app.route('/urls', methods=['POST'])
 def urls_post():
     url_from_request = request.form.to_dict().get('url', '')
-    errors = validate_url(url_from_request)
+    errors = page_analyzer.url.validate(url_from_request)
 
     if 'Not valid url' in errors:
         flash('Некорректный URL', 'alert-danger')
@@ -41,7 +41,7 @@ def urls_post():
             flash('URL обязателен', 'alert-danger')
         return render_template('index.html'), 422
 
-    new_url = normalize_url(url_from_request)
+    new_url = page_analyzer.url.normalize(url_from_request)
 
     data = (new_url, datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 

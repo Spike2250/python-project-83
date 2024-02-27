@@ -5,12 +5,12 @@ import validators
 MAX_URL_LEN = 255
 
 
-def normalize_url(url):
+def normalize(url):
     parsed_url = urlparse(url)
     return f'{parsed_url.scheme}://{parsed_url.netloc}'
 
 
-def validate_url(url):
+def validate(url):
     errors = []
     if url == '':
         errors.append('No url')

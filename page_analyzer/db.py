@@ -1,4 +1,5 @@
 import os
+from contextlib import contextmanager
 from dotenv import load_dotenv
 import psycopg2
 from psycopg2.extras import NamedTupleCursor
@@ -7,8 +8,13 @@ load_dotenv()
 DATABASE_URL = os.getenv('DATABASE_URL')
 
 
-def connect_to_db():
-    return psycopg2.connect(DATABASE_URL)
+@contextmanager
+def connection():
+    conn = psycopg2.connect(DATABASE_URL)
+    try:
+        yield conn
+    finally:
+        conn.close()
 
 
 def get_cursor(connection):
@@ -16,7 +22,7 @@ def get_cursor(connection):
 
 
 def find_url_by_id(id_):
-    with connect_to_db() as conn:
+    with connection() as conn:
         with get_cursor(conn) as cursor:
             query = """
                 SELECT *
@@ -27,7 +33,7 @@ def find_url_by_id(id_):
 
 
 def find_url_by_name(name):
-    with connect_to_db() as conn:
+    with connection() as conn:
         with get_cursor(conn) as cursor:
             query = """
                 SELECT *
@@ -38,7 +44,7 @@ def find_url_by_name(name):
 
 
 def find_checks(url_id):
-    with connect_to_db() as conn:
+    with connection() as conn:
         with get_cursor(conn) as cursor:
             query = """
                 SELECT *
@@ -50,7 +56,7 @@ def find_checks(url_id):
 
 
 def find_all_urls():
-    with connect_to_db() as conn:
+    with connection() as conn:
         with get_cursor(conn) as cursor:
             query = """
                 SELECT DISTINCT ON (urls.id)
@@ -69,7 +75,7 @@ def find_all_urls():
 
 
 def insert_new_url(data):
-    with connect_to_db() as conn:
+    with connection() as conn:
         with get_cursor(conn) as cursor:
             query = """
                 INSERT INTO urls (name, created_at)
@@ -79,7 +85,7 @@ def insert_new_url(data):
 
 
 def insert_url_check(data):
-    with connect_to_db() as conn:
+    with connection() as conn:
         with get_cursor(conn) as cursor:
             query = """
                 INSERT INTO url_checks (
