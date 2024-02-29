@@ -22,7 +22,7 @@ def get_cursor(connection):
 
 
 def find_url_by_id(id_):
-    with connection() as conn, get_cursor(conn) as cursor:
+    with connection() as conn, conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
         query = """
             SELECT *
             FROM urls
@@ -32,7 +32,7 @@ def find_url_by_id(id_):
 
 
 def find_url_by_name(name):
-    with connection() as conn, get_cursor(conn) as cursor:
+    with connection() as conn, conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
         query = """
             SELECT *
             FROM urls
@@ -42,7 +42,7 @@ def find_url_by_name(name):
 
 
 def find_checks(url_id):
-    with connection() as conn, get_cursor(conn) as cursor:
+    with connection() as conn, conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
         query = """
             SELECT *
             FROM url_checks
@@ -53,7 +53,7 @@ def find_checks(url_id):
 
 
 def find_all_urls():
-    with connection() as conn, get_cursor(conn) as cursor:
+    with connection() as conn, conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
         query = """
             SELECT DISTINCT ON (urls.id)
                 urls.id AS id,
@@ -71,7 +71,7 @@ def find_all_urls():
 
 
 def insert_new_url(data):
-    with connection() as conn, get_cursor(conn) as cursor:
+    with connection() as conn, conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
         query = """
             INSERT INTO urls (name, created_at)
             VALUES (%s, %s) RETURNING id;"""
@@ -80,7 +80,7 @@ def insert_new_url(data):
 
 
 def insert_url_check(data):
-    with connection() as conn, get_cursor(conn) as cursor:
+    with connection() as conn, conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
         query = """
             INSERT INTO url_checks (
                 url_id, status_code, h1,
